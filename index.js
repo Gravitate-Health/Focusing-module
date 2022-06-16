@@ -18,12 +18,13 @@ function getAge(dateString) {
 
 app.post('/med-information-focus', (req, res) => {
   console.log("\n\n\n--------------------------------");
-  
+
   let medInformationFocus = req.body
   let gender, age, isPregnant = false
   const PREGNANT_CODE = "LA15173-0"
-  
+
   const entries = medInformationFocus["IPS"]["entry"]
+  let EPI = medInformationFocus["EPI"]
 
   entries.forEach((entry) => {
     const resource = entry["resource"]
@@ -35,28 +36,37 @@ app.post('/med-information-focus', (req, res) => {
       isPregnant = true
     }
   });
-  
+
   console.log("gender: " + gender);
   console.log("isPregnant: " + isPregnant);
   console.log("age: " + age);
-  
+
+  EPI["rules"] = {
+    "patientMale": false,
+    "patientElderWoman": false,
+    "patientPregnantWoman": false
+  }
   // Rule 1 
   // If (gender == male) ==> remove pregnancy section
   if (gender === "male") {
-    console.log("RULE 1!");
+    console.log("RULE patientMale!");
+    EPI["rules"]["patientMale"] = true
   }
-  
+
   // Rule 2
   // If (age > 60 & gender == female) ==> remove pregnancy section
   if (age && age > 60 && gender === "female" && !isPregnant) {
-    console.log("RULE 2!");
+    console.log("RULE patientElderWoman!");
+    EPI["rules"]["patientElderWoman"] = true
   }
-  
+
   // Rule 3
   // if (gender == female & pregnant)==> subpress-with-hyperlink(section-6); add-medication-pictures.
   if (gender === "female" && isPregnant) {
-    console.log("RULE 3!");
+    console.log("RULE patientPregnantWoman!");
+    EPI["rules"]["patientPregnantWoman"] = true
   }
+
   res.send(medInformationFocus["EPI"])
 })
 
