@@ -31,4 +31,4 @@ spec:
       - name: focusing-module
         image: localhost:32000/focusing-module:latest
         ports:
-          containerPort: 3000
+          - containerPort: 3000
