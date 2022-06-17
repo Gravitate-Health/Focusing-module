@@ -38,7 +38,7 @@ app.post('/med-information-focus', (req, res) => {
   const PREGNANT_CODE = "LA15173-0"
 
   const entries = medInformationFocus["IPS"]["entry"]
-  let EPI = medInformationFocus["EPI"]
+  let ePI = medInformationFocus["ePI"]
 
   entries.forEach((entry) => {
     const resource = entry["resource"]
@@ -55,7 +55,7 @@ app.post('/med-information-focus', (req, res) => {
   console.log("isPregnant: " + isPregnant);
   console.log("age: " + age);
 
-  EPI["rules"] = {
+  ePI["rules"] = {
     "patientMale": false,
     "patientElderWoman": false,
     "patientPregnantWoman": false
@@ -64,24 +64,24 @@ app.post('/med-information-focus', (req, res) => {
   // If (gender == male) ==> remove pregnancy section
   if (gender === "male") {
     console.log("RULE patientMale!");
-    EPI["rules"]["patientMale"] = true
+    ePI["rules"]["patientMale"] = true
   }
 
   // Rule 2
   // If (age > 60 & gender == female) ==> remove pregnancy section
   if (age && age > 60 && gender === "female" && !isPregnant) {
     console.log("RULE patientElderWoman!");
-    EPI["rules"]["patientElderWoman"] = true
+    ePI["rules"]["patientElderWoman"] = true
   }
 
   // Rule 3
   // if (gender == female & pregnant)==> subpress-with-hyperlink(section-6); add-medication-pictures.
   if (gender === "female" && isPregnant) {
     console.log("RULE patientPregnantWoman!");
-    EPI["rules"]["patientPregnantWoman"] = true
+    ePI["rules"]["patientPregnantWoman"] = true
   }
 
-  res.send(medInformationFocus["EPI"])
+  res.send(medInformationFocus["ePI"])
 })
 
 app.listen(port, () => {
